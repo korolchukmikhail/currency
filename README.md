@@ -2,7 +2,7 @@
 
 ## Installation
 
-Require `korolchukmikhail/currency_drupal` using composer.
+Require `korolchukmikhail/currency` using composer.
 
 ## Usage
 
