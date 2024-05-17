@@ -1,0 +1,22 @@
+{
+    "name": "korolchukmikhail/currency",
+    "description": "Test task on Drupal 9",
+    "keywords": [],
+    "homepage": "https://github.com/korolchukmikhail/currency",
+    "type": "drupal-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mikhail Karalchuk",
+            "email": "mikhail.freelancer@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Drupal\\currency\\": "src/"
+        }
+    }
+}

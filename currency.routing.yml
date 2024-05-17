@@ -1,0 +1,15 @@
+currency.settings:
+    path: '/admin/config/currency/settings'
+    defaults:
+        _form: '\Drupal\currency\Form\Settings'
+        _title: 'Currency Settings'
+    requirements:
+        _permission: 'administer site configuration'
+
+currency.rates:
+    path: '/admin/currency/rates'
+    defaults:
+        _controller: '\Drupal\currency\Controller\Rates::tableRates'
+        _title: 'Exchange Rates'
+    requirements:
+        _permission: 'access administration pages'

@@ -1,0 +1,117 @@
+<?php
+
+use Drupal\currency\Api\CurrencyTableInterface;
+use Drupal\currency\Api\CurrencyRateTableInterface;
+use Drupal\Core\Database\Database;
+
+// we cant use the _scheme hook because foreign keys...
+function currency_install(): void
+{
+    $connection = Database::getConnection();
+
+    $table = [
+        'description' => 'Stores currencies.',
+        'fields' => [
+            CurrencyTableInterface::ID_KEY => [
+                'type' => 'varchar',
+                'length' => 10,
+                'not null' => true,
+                'description' => 'Primary Key: Unique ID.',
+            ]
+        ],
+        'primary key' => [CurrencyTableInterface::ID_KEY]
+    ];
+
+    $connection->schema()->createTable(CurrencyTableInterface::TABLE_NAME, $table);
+
+    $table = [
+        'description' => 'Stores currency rates.',
+        'fields' => [
+            CurrencyRateTableInterface::ID_KEY => [
+                'type' => 'serial',
+                'unsigned' => true,
+                'not null' => true,
+                'description' => 'Primary Key: Unique ID.',
+            ],
+            CurrencyRateTableInterface::CURRENCY_KEY => [
+                'type' => 'varchar',
+                'length' => 5,
+                'not null' => true,
+                'default' => '',
+                'description' => 'Currency.',
+            ],
+            CurrencyRateTableInterface::BASE_CURRENCY_KEY => [
+                'type' => 'varchar',
+                'length' => 5,
+                'not null' => true,
+                'default' => '',
+                'description' => 'Base Currency.',
+            ],
+            CurrencyRateTableInterface::RATE_KEY => [
+                'type' => 'float',
+                'not null' => true,
+                'size' => 'normal',
+                'default' => 1,
+                'description' => 'Value of currency/base_currency.',
+            ],
+            CurrencyRateTableInterface::CREATED_AT_KEY => [
+                'type' => 'datetime',
+                'mysql_type' => 'timestamp DEFAULT CURRENT_TIMESTAMP',
+                'not null' => true,
+                'description' => 'Created At.',
+            ],
+            CurrencyRateTableInterface::UPDATED_AT_KEY => [
+                'type' => 'datetime',
+                'mysql_type' => 'timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+                'not null' => true,
+                'description' => 'Updated At.',
+            ]
+        ],
+        'primary key' => [CurrencyRateTableInterface::ID_KEY],
+        'unique keys' => [
+            'currency_base_currency' => [
+                CurrencyRateTableInterface::CURRENCY_KEY,
+                CurrencyRateTableInterface::BASE_CURRENCY_KEY,
+            ]
+        ],
+        // not implemented yet...
+        /*'foreign keys' => [
+            'fk_currency_currency' => [
+                'table' => CurrencyTableInterface::TABLE_NAME,
+                'columns' => [CurrencyRateTableInterface::CURRENCY_KEY => CurrencyTableInterface::ID_KEY],
+            ],
+            'fk_currency_base_currency' => [
+                'table' => CurrencyTableInterface::TABLE_NAME,
+                'columns' => [CurrencyRateTableInterface::BASE_CURRENCY_KEY => CurrencyTableInterface::ID_KEY],
+            ]
+        ]*/
+    ];
+
+    $connection->schema()->createTable(CurrencyRateTableInterface::TABLE_NAME, $table);
+
+    $connection->query(
+        'ALTER TABLE '.CurrencyRateTableInterface::TABLE_NAME.'
+    ADD CONSTRAINT fk_currency_currency FOREIGN KEY ('.CurrencyRateTableInterface::CURRENCY_KEY.')
+    REFERENCES '.CurrencyTableInterface::TABLE_NAME.'('.CurrencyTableInterface::ID_KEY.')'
+    );
+    $connection->query(
+        'ALTER TABLE '.CurrencyRateTableInterface::TABLE_NAME.'
+    ADD CONSTRAINT fk_currency_base_currency FOREIGN KEY ('.CurrencyRateTableInterface::BASE_CURRENCY_KEY.')
+    REFERENCES '.CurrencyTableInterface::TABLE_NAME.'('.CurrencyTableInterface::ID_KEY.')'
+    );
+}
+
+function currency_uninstall(): void
+{
+    $connection = Database::getConnection();
+
+    if ($connection->schema()->tableExists(CurrencyTableInterface::TABLE_NAME)) {
+        $connection->query('SET FOREIGN_KEY_CHECKS=0');
+        $connection->schema()->dropTable(CurrencyTableInterface::TABLE_NAME);
+        $connection->query('SET FOREIGN_KEY_CHECKS=1');
+    }
+
+    if ($connection->schema()->tableExists(CurrencyRateTableInterface::TABLE_NAME)) {
+        $connection->schema()->dropTable(CurrencyRateTableInterface::TABLE_NAME);
+    }
+}

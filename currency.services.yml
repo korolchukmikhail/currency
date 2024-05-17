@@ -1,0 +1,21 @@
+services:
+    currency.config:
+        class: Drupal\currency\Helper\Config
+        arguments: [ '@config.factory' ]
+    currency.currency_crud:
+        class: Drupal\currency\Model\Crud\Currency
+        arguments: [ '@database' ]
+    currency.currency_rate_crud:
+        class: Drupal\currency\Model\Crud\CurrencyRate
+        arguments: [ '@database' ]
+    currency.curl:
+        class: Drupal\currency\Model\Curl
+    currency.currency:
+        class: Drupal\currency\Model\Currency
+        arguments: [ '@currency.config', '@currency.currency_crud', '@currency.currency_rate_crud', '@currency.free_currency_api' ]
+    currency.free_currency_api:
+        class: Drupal\currency\Model\FreeCurrencyApi
+        arguments: [ '@currency.curl', '@currency.config' ]
+    currency.cron:
+        class: Drupal\currency\Model\Cron
+        arguments: [ '@currency.config', '@currency.currency_rate_crud', '@currency.free_currency_api' ]

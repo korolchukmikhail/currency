@@ -1,0 +1,14 @@
+name: Currency Converter
+description: Get currencies from freecurrencyapi.com and provide API for conversion
+package: korolchukmikhail
+
+type: module
+core_version_requirement: ^9 || ^10
+
+configure: currency.settings
+configure_parameters:
+  pluginId: currency_plugin
+
+php: 8.2
+
+version: '1.0.3'

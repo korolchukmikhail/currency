@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\currency\Api\ConfigInterface;
+use Drupal\currency\Model\Cron;
+
+/**
+ * @throws Exception
+ */
+function currency_cron(): void
+{
+    $config = Drupal::config(ConfigInterface::CONFIG_KEY);
+
+    $interval = $config->get(ConfigInterface::CRON_INTERVAL);
+    $interval = empty($interval) ? 3600 * 24 : $interval;
+
+    $nextExecution = Drupal::state()->get('currency.cron_next_execution', 0);
+    $requestTime = Drupal::time()->getRequestTime();
+    if ($requestTime >= $nextExecution) {
+        Drupal::logger('currency')->notice('currency ran');
+
+        /** @var Cron $cronJob */
+        $cronJob = Drupal::service('currency.cron');
+        $cronJob->run();
+
+        Drupal::messenger()->addMessage(t('currency cron executed at %time', ['%time' => date('c')]));
+        Drupal::state()->set('currency.cron_next_execution', $requestTime + $interval);
+    }
+}
+
+function currency_theme($existing, $type, $theme, $path)
+{
+    return [
+        'currency_rate' => [
+            'render element' => 'children',
+            'template' => 'rates-section',
+            'path' => $path.'/templates',
+            'variables' => [
+                'header' => '',
+                'description' => '',
+                'table_headers' => [],
+                'table_rows' => [],
+                'empty' => ''
+            ]
+        ]
+    ];
+}

@@ -1,0 +1,11 @@
+currency.settings:
+    title: 'Currency'
+    description: 'Enable/Disable, available currencies and etc.'
+    route_name: currency.settings
+    parent: system.admin_config_system
+
+currency.rates:
+    title: 'Exchange Rates'
+    description: 'Available Currency Rates'
+    parent: system.admin
+    route_name: currency.rates

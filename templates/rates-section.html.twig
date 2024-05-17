@@ -1,0 +1,27 @@
+<h2>{{ header }}</h2>
+<p>{{ description }}</p>
+
+<table>
+    <thead>
+    <tr>
+        {% for th in table_headers %}
+            <th>{{ th }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% if table_rows %}
+        {% for tr in table_rows %}
+            <tr>
+                {% for td in tr %}
+                    <td>{{ td }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="{{ table_headers|length }}">{{ empty }}</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
